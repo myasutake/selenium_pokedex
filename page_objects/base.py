@@ -268,25 +268,25 @@ class BaseElement(BaseDesc):
             raise AttributeError(log_str)
 
 
-class BaseLoadingElement(Loading, BaseElement):
+class BaseLoadingElement(BaseElement, Loading):
     """
     Represents a BaseElement with a loading state.
     """
 
     def __init__(self, driver=None, element=None, desc='base loading element'):
-        Loading.__init__(self=self, desc=desc)
         BaseElement.__init__(self=self, driver=driver, element=element, desc=desc)
+        Loading.__init__(self=self, desc=desc)
         return
 
 
-class BaseExpandingElement(Expanding, BaseElement):
+class BaseExpandingElement(BaseElement, Expanding):
     """
     Represents a BaseElement with expanded/collapsed states.
     """
 
     def __init__(self, driver=None, element=None, desc='base expanding element'):
-        Expanding.__init__(self=self, desc=desc)
         BaseElement.__init__(self=self, driver=driver, element=element, desc=desc)
+        Expanding.__init__(self=self, desc=desc)
         return
 
 
