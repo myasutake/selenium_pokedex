@@ -1,5 +1,7 @@
 import logging
+import time
 
+from selenium.common.exceptions import ElementNotVisibleException
 from selenium.webdriver.common.by import By
 
 from page_objects.base import BaseElement
@@ -14,7 +16,14 @@ class Page(BasePage):
         self._locators = dict()
         self._locators['loading_indicator'] = (By.CSS_SELECTOR, 'div.loader')
         self._locators['search_result'] = (By.CSS_SELECTOR, 'li.animating')
+        self._locators['sort_dropdown'] = (By.CSS_SELECTOR, 'section.overflow-visible > div > div > div.custom-select-menu')
         return
+
+    # Basic Filters
+
+    def _find_sort_dropdown_object(self):
+        element = self.driver.find_element(*self._locators['sort_dropdown'])
+        return SortDropdown(element=element)
 
     # Search Results
 
@@ -56,6 +65,81 @@ class Page(BasePage):
 
     def is_loaded(self):
         return not self.loading_indicator_is_displayed()
+
+
+class SortDropdown(BaseElement):
+
+    def __init__(self, element):
+        super().__init__(element=element, desc='Sort Dropdown')
+        self._locators = dict()
+        self._locators['current_option'] = (By.CSS_SELECTOR, 'label')
+        self._locators['option'] = (By.CSS_SELECTOR, 'li')
+        return
+
+    # Displaying Options
+
+    def click_dropdown(self):
+        logging.info(f"Clicking {self.desc}.")
+        self.element.click()
+        time.sleep(0.1)
+        return
+
+    def display_options(self):
+        if self.options_are_displayed():
+            logging.debug('Options are already displayed. No action needed.')
+            return
+        self.click_dropdown()
+        return
+
+    def options_are_displayed(self):
+        label_element = self.element.find_element(*self._locators['current_option'])
+        return 'opened' in label_element.get_attribute('class')
+
+    def _verify_options_are_displayed(self):
+        if not self.options_are_displayed():
+            log_str = "Options are not displayed."
+            logging.error(log_str)
+            raise ElementNotVisibleException(log_str)
+        return
+
+    # Setting/Getting Options
+
+    def click_option(self, option):
+        self._verify_options_are_displayed()
+        self._verify_option_exists(option)
+
+        element = self._find_option_element(option=option)
+        logging.info(f"Clicking sort option '{option}'.")
+        element.click()
+        time.sleep(0.1)
+        return
+
+    def _find_option_element(self, option):
+        self._verify_options_are_displayed()
+
+        elements = self.element.find_elements(*self._locators['option'])
+        for i in elements:
+            if option.lower() == i.text.lower():
+                return i
+
+        log_str = f"Invalid option '{option}' specified."
+        logging.error(log_str)
+        raise ValueError(log_str)
+
+    @property
+    def selected_option(self):
+        return self.element.find_element(*self._locators['current_option']).text
+
+    @selected_option.setter
+    def selected_option(self, option):
+        self.display_options()
+        self._verify_option_exists(option=option)
+        self.click_option(option=option)
+        return
+
+    def _verify_option_exists(self, option):
+        self._find_option_element(option=option)
+        return
 
 
 class SearchResult(BaseElement):
