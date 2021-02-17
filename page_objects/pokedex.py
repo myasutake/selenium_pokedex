@@ -18,6 +18,14 @@ class Page(BasePage):
 
     # Search Results
 
+    def all_search_results_names_displayed(self):
+        results = self._find_search_result_objects()
+        return [i.name for i in results]
+
+    def all_search_results_numbers_displayed(self):
+        results = self._find_search_result_objects()
+        return [i.number for i in results]
+
     @property
     def number_of_results(self):
         return len(self._find_search_result_objects())
