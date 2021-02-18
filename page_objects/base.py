@@ -396,7 +396,7 @@ class Checkbox(Input):
         return
 
 
-class Text(Input):
+class TextInput(Input):
     """
     Represents <input type="text">.
     """
