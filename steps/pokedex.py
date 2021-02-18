@@ -83,6 +83,27 @@ def verify_sort_method(driver, sort_method):
 # Misc
 
 
+def load_all_results(driver):
+    page = page_objects.pokedex.Page(driver=driver)
+
+    if page.no_results_found():
+        logging.info("No results found; nothing to load.")
+        return
+
+    if page.load_more_button_is_displayed():
+        page.click_load_more_button()
+        page.wait_until_loaded()
+
+    number_of_results_changed = True
+    while number_of_results_changed:
+        number_of_results_before_scroll = page.number_of_results
+        page.scroll_to_footer()
+        page.wait_until_loaded()
+        if number_of_results_before_scroll == page.number_of_results:
+            number_of_results_changed = False
+    return
+
+
 def load_page(driver):
     page = page_objects.pokedex.Page(driver=driver)
     page.load()

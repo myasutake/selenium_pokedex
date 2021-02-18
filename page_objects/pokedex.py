@@ -15,12 +15,18 @@ class Page(BasePage):
     def __init__(self, driver):
         super().__init__(driver=driver, desc='Pokedex Page', url='https://www.pokemon.com/us/pokedex/')
         self._locators = dict()
+        self._locators['main_nav'] = (By.CSS_SELECTOR, 'nav.main')
+
         self._locators['execute_search_button'] = (By.CSS_SELECTOR, 'input.button-search')
         self._locators['loading_indicator'] = (By.CSS_SELECTOR, 'div.loader')
         self._locators['no_results'] = (By.CSS_SELECTOR, 'div.no-results')
         self._locators['search_field'] = (By.CSS_SELECTOR, '#searchInput')
         self._locators['search_result'] = (By.CSS_SELECTOR, 'li.animating')
         self._locators['sort_dropdown'] = (By.CSS_SELECTOR, 'section.overflow-visible > div > div > div.custom-select-menu')
+
+        self._locators['load_more_button'] = (By.CSS_SELECTOR, '#loadMore > span')
+
+        self._locators['footer'] = (By.CSS_SELECTOR, 'div.footer-divider')
         return
 
     # Basic Filters
@@ -60,6 +66,47 @@ class Page(BasePage):
         elements = self.driver.find_elements(*self._locators['search_result'])
         return [SearchResult(i) for i in elements]
 
+    # Load More Button
+
+    def click_load_more_button(self):
+        self._verify_load_more_button_is_displayed()
+        self.scroll_to_load_more_button()
+        element = self.driver.find_element(*self._locators['load_more_button'])
+        logging.info("Clicking 'Load More' button.")
+        element.click()
+        return
+
+    def load_more_button_is_displayed(self):
+        elements = self.driver.find_elements(*self._locators['load_more_button'])
+        if len(elements) == 0:
+            return False
+        else:
+            return elements[0].is_displayed()
+
+    def scroll_to_load_more_button(self):
+        self._verify_load_more_button_is_displayed()
+        load_more_button_element = self.driver.find_element(*self._locators['load_more_button'])
+
+        # This method scrolls and returns coordinates.
+        load_more_button_location = load_more_button_element.location_once_scrolled_into_view
+
+        # But this method alone isn't good enough. The nav could still cover the button, resulting in an
+        #   ElementClickInterceptedException.
+
+        nav_element = self.driver.find_element(*self._locators['main_nav'])
+        load_more_button_y = load_more_button_location['y']
+        if load_more_button_y < nav_element.size['height']:
+            scroll_distance = -(nav_element.size['height'] - load_more_button_y)
+            self.driver.execute_script("window.scrollBy(0,{})".format(scroll_distance))
+        return
+
+    def _verify_load_more_button_is_displayed(self):
+        if not self.load_more_button_is_displayed():
+            log_str = "'Load More' button is not displayed."
+            logging.error(log_str)
+            raise ElementNotVisibleException(log_str)
+        return
+
     # Misc
 
     def accept_cookies(self):
@@ -82,6 +129,11 @@ class Page(BasePage):
 
     def is_loaded(self):
         return not self.loading_indicator_is_displayed()
+
+    def scroll_to_footer(self):
+        element = self.driver.find_element(*self._locators['footer'])
+        element.location_once_scrolled_into_view
+        return
 
 
 class SortDropdown(BaseElement):
