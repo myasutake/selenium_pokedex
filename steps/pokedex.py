@@ -19,7 +19,7 @@ def verify_search_field_results(driver, query):
     page = page_objects.pokedex.Page(driver)
     search_results = page.find_search_result_objects()
     for result in search_results:
-        if query.lower() not in result.name and query.lower() not in result.number:
+        if query.lower() not in result.name.lower() and query.lower() not in result.number:
             log_str = f"Test failed. Search query '{query}' verification failed for '{result}'."
             logging.error(log_str)
             raise AssertionError(log_str)
