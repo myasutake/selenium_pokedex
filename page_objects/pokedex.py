@@ -17,6 +17,7 @@ class Page(BasePage):
         self._locators = dict()
         self._locators['execute_search_button'] = (By.CSS_SELECTOR, 'input.button-search')
         self._locators['loading_indicator'] = (By.CSS_SELECTOR, 'div.loader')
+        self._locators['no_results'] = (By.CSS_SELECTOR, 'div.no-results')
         self._locators['search_field'] = (By.CSS_SELECTOR, '#searchInput')
         self._locators['search_result'] = (By.CSS_SELECTOR, 'li.animating')
         self._locators['sort_dropdown'] = (By.CSS_SELECTOR, 'section.overflow-visible > div > div > div.custom-select-menu')
@@ -47,6 +48,9 @@ class Page(BasePage):
     def all_search_results_numbers_displayed(self):
         results = self.find_search_result_objects()
         return [i.number for i in results]
+
+    def no_results_found(self):
+        return self.driver.find_element(*self._locators['no_results']).is_displayed()
 
     @property
     def number_of_results(self):
