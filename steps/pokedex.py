@@ -3,6 +3,30 @@ import logging
 import page_objects.pokedex
 
 
+# Searching
+
+
+def execute_search_query(driver, query):
+    page = page_objects.pokedex.Page(driver)
+    search_field = page.find_search_field_text_input_object()
+    search_field.value = query
+    page.click_execute_search_button()
+    page.wait_until_loaded()
+    return
+
+
+def verify_search_field_results(driver, query):
+    page = page_objects.pokedex.Page(driver)
+    search_results = page.find_search_result_objects()
+    for result in search_results:
+        if query.lower() not in result.name and query.lower() not in result.number:
+            log_str = f"Test failed. Search query '{query}' verification failed for '{result}'."
+            logging.error(log_str)
+            raise AssertionError(log_str)
+    logging.debug(f"Search verification passed. {len(search_results)} total results found.")
+    return
+
+
 # Sorting
 
 
