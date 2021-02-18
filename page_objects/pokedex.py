@@ -124,7 +124,6 @@ class SortDropdown(BaseElement):
         element = self._find_option_element(option=option)
         logging.info(f"Clicking sort option '{option}'.")
         element.click()
-        time.sleep(0.1)
         return
 
     def _find_option_element(self, option):

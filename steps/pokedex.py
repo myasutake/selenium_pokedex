@@ -34,6 +34,7 @@ def set_sort_method(driver, sort_method):
     page = page_objects.pokedex.Page(driver)
     sort_dropdown = page.find_sort_dropdown_object()
     sort_dropdown.selected_option = sort_method
+    page.wait_until_loaded()
     return
 
 
