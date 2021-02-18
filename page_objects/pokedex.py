@@ -7,6 +7,7 @@ from selenium.webdriver.common.by import By
 from page_objects.base import BaseElement
 from page_objects.base import BaseLoadingElement
 from page_objects.base import BasePage
+from page_objects.base import TextInput
 
 
 class Page(BasePage):
@@ -14,12 +15,24 @@ class Page(BasePage):
     def __init__(self, driver):
         super().__init__(driver=driver, desc='Pokedex Page', url='https://www.pokemon.com/us/pokedex/')
         self._locators = dict()
+        self._locators['execute_search_button'] = (By.CSS_SELECTOR, 'input.button-search')
         self._locators['loading_indicator'] = (By.CSS_SELECTOR, 'div.loader')
+        self._locators['search_field'] = (By.CSS_SELECTOR, '#searchInput')
         self._locators['search_result'] = (By.CSS_SELECTOR, 'li.animating')
         self._locators['sort_dropdown'] = (By.CSS_SELECTOR, 'section.overflow-visible > div > div > div.custom-select-menu')
         return
 
     # Basic Filters
+
+    def click_execute_search_button(self):
+        element = self.driver.find_element(*self._locators['execute_search_button'])
+        logging.info("Clicking execute search button.")
+        element.click()
+        return
+
+    def find_search_field_text_input_object(self):
+        element = self.driver.find_element(*self._locators['search_field'])
+        return TextInput(element)
 
     def find_sort_dropdown_object(self):
         element = self.driver.find_element(*self._locators['sort_dropdown'])
