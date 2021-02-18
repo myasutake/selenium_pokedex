@@ -1,23 +1,12 @@
 import logging.config
 
 import pytest
-from selenium import webdriver
 
 import misc.logging_config
 import steps.pokedex
 
 
 logging.config.dictConfig(misc.logging_config.config)
-
-
-@pytest.fixture(scope='function')
-def driver():
-    d = webdriver.Chrome()
-    d.maximize_window()
-    steps.pokedex.load_page(driver=d)
-    yield d
-    d.quit()
-    return
 
 
 def test_search_by_name(driver):
