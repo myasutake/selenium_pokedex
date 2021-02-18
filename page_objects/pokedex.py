@@ -21,7 +21,7 @@ class Page(BasePage):
 
     # Basic Filters
 
-    def _find_sort_dropdown_object(self):
+    def find_sort_dropdown_object(self):
         element = self.driver.find_element(*self._locators['sort_dropdown'])
         return SortDropdown(element=element)
 
