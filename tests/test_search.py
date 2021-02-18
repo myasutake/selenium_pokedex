@@ -9,16 +9,18 @@ import steps.pokedex
 logging.config.dictConfig(misc.logging_config.config)
 
 
-def test_search_by_name(driver):
+def test_search_by_name(load_pokedex_page):
     logging.info("Test begin.")
+    driver = load_pokedex_page
     steps.pokedex.execute_search_query(driver=driver, query='th')
     steps.pokedex.verify_search_field_results(driver=driver, query='th')
     logging.info("Test passed.")
     return
 
 
-def test_search_by_number(driver):
+def test_search_by_number(load_pokedex_page):
     logging.info("Test begin.")
+    driver = load_pokedex_page
     steps.pokedex.execute_search_query(driver=driver, query='20')
     steps.pokedex.verify_search_field_results(driver=driver, query='20')
     logging.info("Test passed.")
@@ -26,8 +28,9 @@ def test_search_by_number(driver):
 
 
 @pytest.mark.xfail
-def test_search_fail(driver):
+def test_search_fail(load_pokedex_page):
     logging.info("Test begin.")
+    driver = load_pokedex_page
     steps.pokedex.execute_search_query(driver=driver, query='th')
     steps.pokedex.verify_search_field_results(driver=driver, query='ha')
     logging.info("Test passed.")

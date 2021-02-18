@@ -5,7 +5,7 @@ import steps.pokedex
 
 
 @pytest.fixture(scope='function')
-def driver():
+def load_pokedex_page():
     d = webdriver.Chrome()
     d.maximize_window()
     steps.pokedex.load_page(driver=d)
